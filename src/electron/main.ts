@@ -12,6 +12,7 @@ function createWindow() {
       nodeIntegration: true,
       webSecurity: true,
     },
+    backgroundColor: "#fff"
   });
 
   if (process.env.NODE_ENV === "development") {
