@@ -1,0 +1,82 @@
+{
+  "name": "electron-react-ts",
+  "version": "1.0.0",
+  "description": "New Electron app",
+  "main": "./dist/main.js",
+  "scripts": {
+    "dev:electron": "webpack --config webpack.electron.config.js --mode development && electron .",
+    "dev:react": "webpack serve --config webpack.react.config.js --mode development",
+    "build:electron": "webpack --config webpack.electron.config.js --mode production",
+    "build:react": "webpack --config webpack.react.config.js --mode production",
+    "build": "npm run build:electron && npm run build:react",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "keywords": [],
+  "author": "lamnguyencse17",
+  "license": "ISC",
+  "build": {
+    "files": [
+      "dist/",
+      "node_modules/",
+      "package.json"
+    ],
+    "productName": "Muse",
+    "appId": "com.lamnguyencse17.muse",
+    "directories": {
+      "output": "dist"
+    }
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/plugin-transform-runtime": "^7.12.1",
+    "@babel/polyfill": "^7.12.1",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/preset-react": "^7.12.5",
+    "@babel/preset-typescript": "^7.12.1",
+    "@fullhuman/postcss-purgecss": "^3.0.0",
+    "@types/react": "^16.9.56",
+    "@types/react-dom": "^16.9.9",
+    "@types/react-redux": "^7.1.11",
+    "@types/redux": "^3.6.0",
+    "@types/redux-thunk": "^2.1.0",
+    "@typescript-eslint/eslint-plugin": "^4.7.0",
+    "@typescript-eslint/parser": "^4.7.0",
+    "@webpack-cli/serve": "^1.1.0",
+    "autoprefixer": "^9.8.6",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.2.1",
+    "css-loader": "^5.0.1",
+    "electron": "^8.5.3",
+    "electron-builder": "^22.9.1",
+    "eslint": "^7.13.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-react": "0.0.4",
+    "file-loader": "^6.2.0",
+    "html-webpack-plugin": "^4.5.0",
+    "mini-css-extract-plugin": "^1.3.0",
+    "postcss": "^8.1.7",
+    "postcss-cli": "^8.2.0",
+    "postcss-loader": "^4.0.4",
+    "prettier": "^2.1.2",
+    "redux-devtools": "^3.7.0",
+    "redux-devtools-extension": "^2.13.8",
+    "style-loader": "^2.0.0",
+    "tailwindcss": "^1.9.6",
+    "typescript": "^4.0.5",
+    "webpack": "^5.3.2",
+    "webpack-cli": "^4.1.0",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "dependencies": {
+    "formik": "^2.2.5",
+    "lodash": "^4.17.20",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-redux": "^7.2.2",
+    "react-router-dom": "^5.2.0",
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0"
+  }
+}
