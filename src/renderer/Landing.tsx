@@ -21,11 +21,10 @@ class Landing extends Component<{}, AppState> {
 
   render() {
     return (
-      <div className="w-full h-full overflow-hidden bg-indigo-600">
-        <div className="mx-auto my-48 w-1/2 space-y-10">
-            <div className="mx-auto text-5xl text-white animate-bounce text-center">Welcome To Muse</div>
+      <div className="overflow-hidden bg-indigo-600" style={{height: '90%'}}>
+        <div className="mx-auto my-32 w-1/2 md:w-1/3">
+            <div className="mx-auto text-5xl text-white text-center mb-10">Welcome To Muse</div>
             <HostButton hoverHost={this.state.hoverHost} toggleJoin={this.toggleJoin}/>
-          <br/>
             <JoinButton hoverJoin={this.state.hoverJoin} toggleHost={this.toggleHost}/>
         </div>
       </div>

@@ -1,17 +1,25 @@
-import React from 'react';
-import ReactDom from 'react-dom';
+import React from "react";
+import ReactDom from "react-dom";
 import "./assets/main.css";
 import Landing from "./Landing";
-import {HashRouter, Route} from "react-router-dom"
+import { HashRouter, Route } from "react-router-dom";
+import Host from "./Host";
+import Navbar from "./Navbar";
 
 const Index = () => {
   return (
-      <HashRouter>
+    <HashRouter>
+      <div className="w-full h-full overflow-hidden">
+        <Navbar />
         <Route path="/" exact>
-          <Landing/>
+          <Landing />
         </Route>
-      </HashRouter>
-  )
-}
+        <Route path="/host">
+          <Host />
+        </Route>
+      </div>
+    </HashRouter>
+  );
+};
 
-ReactDom.render(<Index />, document.getElementById("root"))
+ReactDom.render(<Index />, document.getElementById("root"));
