@@ -1,33 +1,33 @@
-import React, { Component } from "react";
+import React, {useEffect, useState} from 'react';
+import {ipcRenderer} from "electron";
+import {GET_PEER_ID, GET_PEER_ID_REPLY, PEERJS_CHANNEL} from "../common/constants/peerjs";
 
-interface AppState {}
-
-class Host extends Component<{}, AppState> {
-    constructor(props: {}) {
-        super(props)
-        this.state={ hoverHost: true, hoverJoin: true };
-    }
-    toggleJoin = () => {
-        this.setState({...this.state, hoverJoin: !this.state.hoverJoin})
-    }
-    toggleHost = () => {
-        this.setState({...this.state, hoverHost: !this.state.hoverHost})
-    }
-
-    render() {
-        return (
-            <div className="overflow-hidden bg-green-400" style={{height: "90%"}}>
-                <div className="mx-auto my-24 w-2/3 space-y-10">
-                    <div className="mx-auto text-4xl text-black text-center">
-                        <div>Let's Host A Music Session</div>
-                    </div>
-                    <div className="mx-auto text-2xl text-black text-center">
-                        <div>Let Everyone Know This Cool ID</div>
-                    </div>
+function Host() {
+    const [hostId, setHostId] = useState("");
+    useEffect(() => {
+        ipcRenderer.send(PEERJS_CHANNEL, {eventName: GET_PEER_ID});
+        ipcRenderer.once(GET_PEER_ID_REPLY, (event, arg: string) => {
+            setHostId(arg);
+        })
+        // return () => {
+        //     ipcRenderer.removeListener(GET_PEER_ID_REPLY, () => {
+        //         console.log("REMOVE")
+        //     })
+        // }
+    }, [])
+    return (
+        <div className="overflow-hidden bg-green-400" style={{height: "90%"}}>
+            <div className="mx-auto my-24 w-2/3 space-y-10">
+                <div className="mx-auto text-4xl text-black text-center">
+                    <div>Let's Host A Music Session</div>
+                </div>
+                <div className="flex flex-col mx-auto text-2xl text-black text-center">
+                    <div>Let Everyone Know This Cool ID</div>
+                    {hostId === "" ? <></> : <div>{hostId}</div>}
                 </div>
             </div>
-        );
-    }
+        </div>
+    );
 }
 
 export default Host;
