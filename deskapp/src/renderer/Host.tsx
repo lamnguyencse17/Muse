@@ -1,19 +1,23 @@
 import React, {useEffect, useState} from 'react';
-import {ipcRenderer} from "electron";
-import {GET_PEER_ID, GET_PEER_ID_REPLY, PEERJS_CHANNEL} from "../common/constants/peerjs";
+import {connectToPeerServer, disconnectToPeerServer, getPeerObject, PeerObject} from "../common/peer";
 
 function Host() {
     const [hostId, setHostId] = useState("");
+    const [peer, setPeer] = useState<PeerObject | undefined>(undefined);
     useEffect(() => {
-        ipcRenderer.send(PEERJS_CHANNEL, {eventName: GET_PEER_ID});
-        ipcRenderer.once(GET_PEER_ID_REPLY, (event, arg: string) => {
-            setHostId(arg);
-        })
-        // return () => {
-        //     ipcRenderer.removeListener(GET_PEER_ID_REPLY, () => {
-        //         console.log("REMOVE")
-        //     })
-        // }
+        (async () => {
+            try {
+                setPeer(getPeerObject());
+            } catch (err) {
+                const returnedPeer =  await connectToPeerServer()
+                setPeer(returnedPeer);
+                setHostId(returnedPeer.getPeerID());
+            }
+        })()
+        return () => {
+            console.log("Unmounted")
+            disconnectToPeerServer();
+        }
     }, [])
     return (
         <div className="overflow-hidden bg-green-400" style={{height: "90%"}}>
