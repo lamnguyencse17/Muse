@@ -9,13 +9,12 @@ function Host() {
             try {
                 setPeer(getPeerObject());
             } catch (err) {
-                const returnedPeer =  await connectToPeerServer()
+                const returnedPeer = await connectToPeerServer()
                 setPeer(returnedPeer);
                 setHostId(returnedPeer.getPeerID());
             }
         })()
         return () => {
-            console.log("Unmounted")
             disconnectToPeerServer();
         }
     }, [])

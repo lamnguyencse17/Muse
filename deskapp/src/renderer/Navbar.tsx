@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from "react-router-dom"
 
-function Navbar(props : {}) {
+function Navbar(props: {}) {
     return (
         <div className="bg-gray-200 w-full flex content-center flex-wrap justify-center" style={{height: "10%"}}>
             <div className="space-x-10 inline-block h-auto">
