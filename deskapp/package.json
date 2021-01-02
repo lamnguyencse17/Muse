@@ -42,6 +42,7 @@
     "@types/react-redux": "^7.1.11",
     "@types/redux": "^3.6.0",
     "@types/redux-thunk": "^2.1.0",
+    "@types/validator": "^13.1.2",
     "@typescript-eslint/eslint-plugin": "^4.7.0",
     "@typescript-eslint/parser": "^4.7.0",
     "@webpack-cli/serve": "^1.1.0",
@@ -80,6 +81,7 @@
     "react-redux": "^7.2.2",
     "react-router-dom": "^5.2.0",
     "redux": "^4.0.5",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "validator": "^13.5.2"
   }
 }

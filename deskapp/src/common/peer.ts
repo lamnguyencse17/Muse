@@ -1,8 +1,9 @@
-import Peer from "peerjs";
+import Peer, {DataConnection} from "peerjs";
 
 export class PeerObject {
     public peer: Peer | undefined;
     private peerID: string | undefined;
+    private  dataConnection: DataConnection | undefined;
 
     public initPeer = async (): Promise<Peer | undefined> => {
         const initPromise = () => new Promise<Peer | undefined>(resolve => {
@@ -29,7 +30,22 @@ export class PeerObject {
         this.peer?.disconnect();
     }
     public isDisconnected = (): boolean | undefined => {
-        return this.peer?.disconnected;
+        if (this.peer === undefined) {
+            throw "Not connected to peer server yet!"
+        }
+        return this.peer.disconnected;
+    }
+    public connectToHost = (hostId:string):boolean => {
+        if (this.peer === undefined) {
+            throw "Not connected to peer server yet!"
+        }
+        try {
+            this.dataConnection = this.peer.connect(hostId);
+            return true;
+        } catch (err) {
+            console.log(err);
+            return false;
+        }
     }
 }
 

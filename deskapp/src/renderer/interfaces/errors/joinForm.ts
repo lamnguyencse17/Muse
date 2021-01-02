@@ -1,0 +1,3 @@
+interface joinFormError {
+    hostId?: string
+}
