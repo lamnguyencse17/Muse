@@ -6,6 +6,7 @@ import {HashRouter, Route} from "react-router-dom";
 import Host from "./Host";
 import Navbar from "./Navbar";
 import Join from "./Join";
+import Session from "./Session";
 
 const Index = () => {
     return (
@@ -20,6 +21,9 @@ const Index = () => {
                 </Route>
                 <Route path="/join">
                     <Join/>
+                </Route>
+                <Route path="/session">
+                    <Session/>
                 </Route>
             </div>
         </HashRouter>

@@ -1,21 +1,39 @@
 import React, {useEffect, useState} from 'react';
 import {connectToPeerServer, disconnectToPeerServer, getPeerObject, PeerObject} from "../common/peer";
+import {useHistory} from "react-router-dom";
 
 function Host() {
     const [hostId, setHostId] = useState("");
-    const [peer, setPeer] = useState<PeerObject | undefined>(undefined);
+    const [peerObject, setPeer] = useState<PeerObject | undefined>(undefined);
+    const history = useHistory();
     useEffect(() => {
+        let isConnected = false;
         (async () => {
+            if (peerObject !== undefined) {
+                return;
+            }
+            let returnedPeer: PeerObject | undefined;
             try {
-                setPeer(getPeerObject());
+                returnedPeer = getPeerObject();
             } catch (err) {
-                const returnedPeer = await connectToPeerServer()
+                returnedPeer = await connectToPeerServer()
+            }
+            if (returnedPeer !== undefined && returnedPeer.peer !== undefined) {
                 setPeer(returnedPeer);
                 setHostId(returnedPeer.getPeerID());
+                returnedPeer.peer.on("connection", () => {
+                    isConnected = true;
+                    history.push("/session");
+                })
             }
         })()
         return () => {
-            disconnectToPeerServer();
+            if (isConnected) {
+                peerObject?.peer?.off("connection", () => {
+                });
+            } else {
+                disconnectToPeerServer();
+            }
         }
     }, [])
     return (

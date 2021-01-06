@@ -3,8 +3,7 @@ import Peer, {DataConnection} from "peerjs";
 export class PeerObject {
     public peer: Peer | undefined;
     private peerID: string | undefined;
-    private  dataConnection: DataConnection | undefined;
-
+    private dataConnections: DataConnection[] = [];
     public initPeer = async (): Promise<Peer | undefined> => {
         const initPromise = () => new Promise<Peer | undefined>(resolve => {
             this.peer = new Peer({
@@ -15,6 +14,9 @@ export class PeerObject {
             this.peer.on("open", (id) => {
                 this.peerID = id;
                 resolve(this.peer);
+            })
+            this.peer?.on("connection", (dataConnection) => {
+                this.dataConnections.push(dataConnection);
             })
         });
         return await initPromise();
@@ -40,12 +42,15 @@ export class PeerObject {
             throw "Not connected to peer server yet!"
         }
         try {
-            this.dataConnection = this.peer.connect(hostId);
+            this.dataConnections.push(this.peer.connect(hostId));
             return true;
         } catch (err) {
             console.log(err);
             return false;
         }
+    }
+    public getConnections = (): DataConnection[] => {
+        return this.dataConnections;
     }
 }
 

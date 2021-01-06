@@ -1,40 +1,58 @@
 import React, {useEffect, useState} from 'react';
 import {connectToPeerServer, disconnectToPeerServer, getPeerObject, PeerObject} from "../common/peer";
-import {Formik, FormikHelpers} from "formik";
+import {Formik} from "formik";
 import {ID_MAX_LENGTH} from "../common/constants/input";
 import joinValidator from "./validators/joinValidator";
+import {useHistory} from "react-router-dom";
 
 const joinFormInitialValue = {
     hostId: ""
 }
 
 function Join() {
+    const history = useHistory();
     const [clientId, setClientId] = useState("");
-    const [peer, setPeer] = useState<PeerObject | undefined>(undefined);
+    const [peerObject, setPeer] = useState<PeerObject | undefined>(undefined);
     useEffect(() => {
+        let isConnected = false;
         (async () => {
+            let returnedPeer;
             try {
-                setPeer(getPeerObject());
+                returnedPeer = getPeerObject();
             } catch (err) {
-                const returnedPeer = await connectToPeerServer()
+                returnedPeer = await connectToPeerServer()
+            }
+            if (returnedPeer !== undefined && returnedPeer.peer !== undefined) {
                 setPeer(returnedPeer);
                 setClientId(returnedPeer.getPeerID());
+                returnedPeer.peer.on("connection", () => {
+                    isConnected = true;
+                    history.push("/session")
+                })
             }
         })()
         return () => {
-            disconnectToPeerServer();
+            if (isConnected) {
+                peerObject?.peer?.off("connection", () => {
+                });
+            } else {
+                disconnectToPeerServer();
+            }
         }
     }, [])
 
-    const submitJoinForm = ({hostId}: {hostId: string}, {setSubmitting, setErrors}: {setSubmitting: any, setErrors: any}) => {
+    const submitJoinForm = ({hostId}: { hostId: string }, {
+        setSubmitting,
+        setErrors
+    }: { setSubmitting: any, setErrors: any }) => {
         setSubmitting(true);
-        if (peer === undefined){
+        if (peerObject === undefined) {
             setSubmitting(false);
             setErrors({hostId: "You are not connected to the peer server"});
             return;
         }
-        const connectionStatus = peer.connectToHost(hostId);
-        if (!connectionStatus){
+        const connectionStatus = peerObject.connectToHost(hostId);
+        if (!connectionStatus) {
             setSubmitting(false);
             setErrors({hostId: "Something went wrong"});
             return;
@@ -46,7 +64,10 @@ function Join() {
         <div className="overflow-hidden bg-orange-400" style={{height: "90%"}}>
             <div className="container mx-auto h-full">
                 <Formik initialValues={joinFormInitialValue}
-                        onSubmit={(values, {setSubmitting, setErrors}) => submitJoinForm(values, {setSubmitting, setErrors})}
+                        onSubmit={(values, {setSubmitting, setErrors}) => submitJoinForm(values, {
+                            setSubmitting,
+                            setErrors
+                        })}
                         validate={joinValidator}>
                     {({
                           values,
