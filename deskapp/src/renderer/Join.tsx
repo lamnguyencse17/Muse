@@ -4,6 +4,7 @@ import {Formik} from "formik";
 import {ID_MAX_LENGTH} from "../common/constants/input";
 import joinValidator from "./validators/joinValidator";
 import {useHistory} from "react-router-dom";
+import {PEER_CONNECTED_EVENT} from "../common/constants/events";
 
 const joinFormInitialValue = {
     hostId: ""
@@ -14,32 +15,32 @@ function Join() {
     const [clientId, setClientId] = useState("");
     const [peerObject, setPeer] = useState<PeerObject | undefined>(undefined);
     useEffect(() => {
-        let isConnected = false;
         (async () => {
+            if (peerObject !== undefined) {
+                return;
+            }
             let returnedPeer;
             try {
                 returnedPeer = getPeerObject();
             } catch (err) {
-                returnedPeer = await connectToPeerServer()
+                returnedPeer = await connectToPeerServer(false)
             }
-            if (returnedPeer !== undefined && returnedPeer.peer !== undefined) {
+            if (returnedPeer !== undefined) {
                 setPeer(returnedPeer);
                 setClientId(returnedPeer.getPeerID());
-                returnedPeer.peer.on("connection", () => {
-                    isConnected = true;
-                    history.push("/session")
-                })
             }
         })()
         return () => {
-            if (isConnected) {
-                peerObject?.peer?.off("connection", () => {
-                });
+            if (peerObject?.getConnections().length != 0) {
+                peerObject?.off(PEER_CONNECTED_EVENT, () => {
+                })
+                // peerObject?.peer?.off("connection", () => {
+                // });
             } else {
                 disconnectToPeerServer();
             }
         }
-    }, [])
+    }, [peerObject])
 
     const submitJoinForm = ({hostId}: { hostId: string }, {
         setSubmitting,
@@ -58,7 +59,7 @@ function Join() {
             return;
         }
         setSubmitting(false);
-        console.log("connected");
+        history.push("/session")
     }
     return (
         <div className="overflow-hidden bg-orange-400" style={{height: "90%"}}>

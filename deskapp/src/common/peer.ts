@@ -1,11 +1,15 @@
 import Peer, {DataConnection} from "peerjs";
+import EventEmitter from "events"
+import {PEER_CONNECTED_EVENT, PEER_DISCONNECTED_EVENT} from "./constants/events";
 
-export class PeerObject {
-    public peer: Peer | undefined;
+export class PeerObject extends EventEmitter{
+    private peer: Peer | undefined;
     private peerID: string | undefined;
     private dataConnections: DataConnection[] = [];
-    public initPeer = async (): Promise<Peer | undefined> => {
+    private isHost: boolean = false;
+    public initPeer = async (isHost: boolean): Promise<Peer | undefined> => {
         const initPromise = () => new Promise<Peer | undefined>(resolve => {
+            this.isHost = isHost
             this.peer = new Peer({
                 host: "localhost",
                 port: 3000,
@@ -16,7 +20,15 @@ export class PeerObject {
                 resolve(this.peer);
             })
             this.peer?.on("connection", (dataConnection) => {
-                this.dataConnections.push(dataConnection);
+                const connectedDataConnections = [...this.dataConnections, dataConnection]
+                this.emit(PEER_CONNECTED_EVENT, connectedDataConnections)
+                dataConnection.on("close", () => {
+                    const disconnectedDataConnections = this.dataConnections.filter((existedConnection:DataConnection) => existedConnection.peer !== dataConnection.peer)
+                    this.emit(PEER_DISCONNECTED_EVENT, disconnectedDataConnections)
+                    this.dataConnections = disconnectedDataConnections
+                    dataConnection.off("close", () => {})
+                })
+                this.dataConnections = connectedDataConnections;
             })
         });
         return await initPromise();
@@ -56,9 +68,9 @@ export class PeerObject {
 
 let peer: PeerObject | undefined;
 
-export const connectToPeerServer = async (): Promise<PeerObject> => {
+export const connectToPeerServer = async (isHost: boolean): Promise<PeerObject> => {
     peer = new PeerObject();
-    await peer.initPeer();
+    await peer.initPeer(isHost);
     return peer;
 }
 

@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {connectToPeerServer, disconnectToPeerServer, getPeerObject, PeerObject} from "../common/peer";
 import {useHistory} from "react-router-dom";
+import {PEER_CONNECTED_EVENT} from "../common/constants/events";
 
 function Host() {
     const [hostId, setHostId] = useState("");
     const [peerObject, setPeer] = useState<PeerObject | undefined>(undefined);
     const history = useHistory();
     useEffect(() => {
-        let isConnected = false;
         (async () => {
             if (peerObject !== undefined) {
                 return;
@@ -16,26 +16,27 @@ function Host() {
             try {
                 returnedPeer = getPeerObject();
             } catch (err) {
-                returnedPeer = await connectToPeerServer()
+                returnedPeer = await connectToPeerServer(true)
             }
-            if (returnedPeer !== undefined && returnedPeer.peer !== undefined) {
+            if (returnedPeer !== undefined) {
                 setPeer(returnedPeer);
                 setHostId(returnedPeer.getPeerID());
-                returnedPeer.peer.on("connection", () => {
-                    isConnected = true;
-                    history.push("/session");
-                })
             }
         })()
+        peerObject?.on(PEER_CONNECTED_EVENT, () => {
+            history.push("/session");
+        })
         return () => {
-            if (isConnected) {
-                peerObject?.peer?.off("connection", () => {
-                });
+            if (peerObject?.getConnections().length != 0) {
+                peerObject?.off(PEER_CONNECTED_EVENT, () => {
+                })
+                // peerObject?.peer?.off("connection", () => {
+                // });
             } else {
                 disconnectToPeerServer();
             }
         }
-    }, [])
+    }, [peerObject])
     return (
         <div className="overflow-hidden bg-green-400" style={{height: "90%"}}>
             <div className="mx-auto my-24 w-2/3 space-y-10">
